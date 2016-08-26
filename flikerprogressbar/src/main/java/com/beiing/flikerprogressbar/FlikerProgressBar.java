@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -18,6 +21,11 @@ public class FlikerProgressBar extends View {
 
     private Paint textPaint;
 
+    private Paint bgPaint;
+
+    private final PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
+
+
 
 
     public FlikerProgressBar(Context context) {
@@ -31,13 +39,20 @@ public class FlikerProgressBar extends View {
     public FlikerProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        init();
+        initTextPaint();
+
+        initBgPaint();
     }
 
-    private void init() {
+    private void initBgPaint() {
+        bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bgPaint.setStyle(Paint.Style.STROKE);
+        bgPaint.setStrokeWidth(dp2px(1));
+        bgPaint.setColor(Color.BLUE);
+    }
+
+    private void initTextPaint() {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        textPaint.setStyle(Paint.Style.STROKE);
-        textPaint.setStrokeWidth(dp2px(1));
         textPaint.setColor(Color.BLUE);
         textPaint.setTextSize(dp2px(12));
     }
@@ -67,7 +82,7 @@ public class FlikerProgressBar extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawRect(0, 0, getWidth(), getHeight(), textPaint);
+        canvas.drawRect(0, 0, getWidth(), getHeight(), bgPaint);
 
     }
 
