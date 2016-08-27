@@ -12,7 +12,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 /**
- * Created by chenliu on 2016/8/26.<br/>
+ * Created by chenliu on 2016/8/26.<br/
  * 描述：
  * </br>
  */
