@@ -1,6 +1,7 @@
 package com.beiing.flikerprogressbar;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +17,7 @@ import android.view.View;
  * </br>
  */
 public class FlikerProgressBar extends View {
+    private final PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
 
     private int DEFAULT_HEIGHT_DP = 40;
 
@@ -23,9 +25,9 @@ public class FlikerProgressBar extends View {
 
     private Paint bgPaint;
 
-    private final PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
+    private Canvas newCanvas;
 
-
+    private Bitmap newBitmap;
 
 
     public FlikerProgressBar(Context context) {
@@ -54,7 +56,7 @@ public class FlikerProgressBar extends View {
     private void initTextPaint() {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(Color.BLUE);
-        textPaint.setTextSize(dp2px(12));
+        textPaint.setTextSize(dp2px(16));
     }
 
 
@@ -77,6 +79,19 @@ public class FlikerProgressBar extends View {
         setMeasuredDimension(widthSpecSize, height);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        initNew();
+
+    }
+
+    private void initNew() {
+        newBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        newCanvas = new Canvas(newBitmap);
+        newCanvas.drawText("正在加载正在加载正在加载正在加载正在加载正在加载", 0, getHeight(), textPaint);
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -84,6 +99,14 @@ public class FlikerProgressBar extends View {
 
         canvas.drawRect(0, 0, getWidth(), getHeight(), bgPaint);
 
+        drawProgress();
+
+        canvas.drawBitmap(newBitmap, 0, 0, null);
+    }
+
+    private void drawProgress() {
+        textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+        newCanvas.drawRect(0, 0 , dp2px(100), getHeight(), textPaint);
     }
 
 
