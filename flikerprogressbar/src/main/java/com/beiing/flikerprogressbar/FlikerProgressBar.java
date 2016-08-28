@@ -18,8 +18,6 @@ public class FlikerProgressBar extends View {
 
     private Paint textPaint;
 
-
-
     public FlikerProgressBar(Context context) {
         this(context, null, 0);
     }
