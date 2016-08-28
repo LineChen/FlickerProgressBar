@@ -1,7 +1,7 @@
 package com.beiing.flikerprogressbar;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,9 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.Xfermode;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 /**
@@ -34,16 +32,7 @@ public class FlikerProgressBar extends View implements Runnable{
 
     private String progressText;
 
-    private Rect textBouds = new Rect();
-
-    /**
-     * 当前进度
-     */
-    private float progress;
-
-    private boolean isFinish;
-
-    private boolean isStop;
+    private Rect textBouds;
 
     /**
      * 左右来回移动的滑块
@@ -58,7 +47,37 @@ public class FlikerProgressBar extends View implements Runnable{
     /**
      * 进度条 bitmap ，包含滑块
      */
-    private Bitmap progressBm;
+    private Bitmap pgBitmap;
+
+    private Canvas pgCanvas;
+
+    /**
+     * 当前进度
+     */
+    private float progress;
+
+    private boolean isFinish;
+
+    private boolean isStop;
+
+    /**
+     * 下载中颜色
+     */
+    private int loadingColor;
+
+    /**
+     * 暂停时颜色
+     */
+    private int stopColor;
+
+    /**
+     * 进度文本、边框、进度条颜色
+     */
+    private int progressColor;
+
+    private int textSize;
+
+    private Thread thread;
 
     public FlikerProgressBar(Context context) {
         this(context, null, 0);
@@ -71,24 +90,32 @@ public class FlikerProgressBar extends View implements Runnable{
     public FlikerProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        initAttrs(attrs);
         init();
-
-        initBm();
     }
 
-    private void initBm() {
-//        progressBm = Bitmap.createBitmap()
+    private void initAttrs(AttributeSet attrs) {
+        if (attrs != null) {
+            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.FlikerProgressBar);
+            textSize = (int) ta.getDimension(R.styleable.FlikerProgressBar_textSize, dp2px(12));
+            loadingColor = ta.getColor(R.styleable.FlikerProgressBar_loadingColor, Color.parseColor("#40c4ff"));
+            stopColor = ta.getColor(R.styleable.FlikerProgressBar_stopColor, Color.parseColor("#ff9800"));
+            ta.recycle();
+        }
     }
 
     private void init() {
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        textPaint.setTextSize(dp2px(16));
+        textPaint.setTextSize(textSize);
+        textBouds = new Rect();
 
+        progressColor = loadingColor;
         flikerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.flicker);
         flickerLeft = -flikerBitmap.getWidth();
 
-        new Thread(this).start();
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -118,16 +145,15 @@ public class FlikerProgressBar extends View implements Runnable{
         drawBorder(canvas);
 
         //进度
-        drawProgress(canvas);
+        drawProgress();
+
+        canvas.drawBitmap(pgBitmap, 0, 0, null);
 
         //进度text
         drawProgressText(canvas);
 
         //变色处理
         drawColorProgressText(canvas);
-
-        //闪烁
-        drawFlicker(canvas);
     }
 
     /**
@@ -136,24 +162,29 @@ public class FlikerProgressBar extends View implements Runnable{
      */
     private void drawBorder(Canvas canvas) {
         bgPaint.setStyle(Paint.Style.STROKE);
-        bgPaint.setColor(Color.BLUE);
+        bgPaint.setColor(progressColor);
         bgPaint.setStrokeWidth(dp2px(1));
         canvas.drawRect(0, 0, getWidth(), getHeight(), bgPaint);
     }
 
     /**
      * 进度
-     * @param canvas
      */
-    private void drawProgress(Canvas canvas) {
+    private void drawProgress() {
         bgPaint.setStyle(Paint.Style.FILL);
         bgPaint.setStrokeWidth(0);
-        bgPaint.setColor(Color.DKGRAY);
-
-
+        bgPaint.setColor(progressColor);
 
         float right = (progress / MAX_PROGRESS) * getMeasuredWidth();
-        canvas.drawRect(0, 0, right, getMeasuredHeight(), bgPaint);
+        pgBitmap = Bitmap.createBitmap((int) Math.max(right, 1), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        pgCanvas = new Canvas(pgBitmap);
+        pgCanvas.drawColor(progressColor);
+
+        if(!isStop){
+            bgPaint.setXfermode(xfermode);
+            pgCanvas.drawBitmap(flikerBitmap, flickerLeft, 0, bgPaint);
+            bgPaint.setXfermode(null);
+        }
     }
 
     /**
@@ -161,8 +192,8 @@ public class FlikerProgressBar extends View implements Runnable{
      * @param canvas
      */
     private void drawProgressText(Canvas canvas) {
-        textPaint.setColor(Color.BLUE);
-        progressText = "下载中" + progress + "%";
+        textPaint.setColor(progressColor);
+        progressText = getProgressText();
         textPaint.getTextBounds(progressText, 0, progressText.length(), textBouds);
         int tWidth = textBouds.width();
         int tHeight = textBouds.height();
@@ -191,18 +222,50 @@ public class FlikerProgressBar extends View implements Runnable{
         }
     }
 
-    private void drawFlicker(Canvas canvas) {
-        canvas.drawBitmap(flikerBitmap, flickerLeft, 0, null);
+    public void setProgress(float progress){
+        if(!isStop){
+            this.progress = progress;
+            invalidate();
+        }
     }
 
-    public void setProgress(float progress){
-        this.progress = progress;
+    public float getProgress() {
+        return progress;
+    }
+
+    public void setStop(boolean stop) {
+        isStop = stop;
+        if(isStop){
+            progressColor = stopColor;
+        } else {
+            progressColor = loadingColor;
+            thread = new Thread(this);
+            thread.start();
+        }
         invalidate();
     }
 
-    private float dp2px(int dp){
-        float density = getContext().getResources().getDisplayMetrics().density;
-        return dp * density;
+    public void finishLoad() {
+        isFinish = true;
+        setStop(true);
+    }
+
+    public boolean isStop() {
+        return isStop;
+    }
+
+    public boolean isFinish() {
+        return isFinish;
+    }
+
+    public void toggle(){
+        if(!isFinish){
+            if(isStop){
+                setStop(false);
+            } else {
+                setStop(true);
+            }
+        }
     }
 
     @Override
@@ -216,12 +279,36 @@ public class FlikerProgressBar extends View implements Runnable{
             }
             postInvalidate();
             try {
-                Thread.sleep(35);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    private String getProgressText() {
+        String text= "";
+        if(!isFinish){
+            if(!isStop){
+                text = "下载中" + progress + "%";
+            } else {
+                text = "继续";
+            }
+        } else{
+            text = "下载完成";
+        }
+
+        return text;
+    }
+
+
+
+    private float dp2px(int dp){
+        float density = getContext().getResources().getDisplayMetrics().density;
+        return dp * density;
+    }
+
+
 }
 
 

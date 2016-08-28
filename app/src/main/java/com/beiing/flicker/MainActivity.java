@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.beiing.flikerprogressbar.FlikerProgressBar;
 
@@ -16,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             flikerProgressBar.setProgress(msg.arg1);
+            if(msg.arg1 == 100){
+                flikerProgressBar.finishLoad();
+            }
         }
     };
     @Override
@@ -24,6 +28,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         flikerProgressBar = (FlikerProgressBar) findViewById(R.id.flikerbar);
+
+        flikerProgressBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!flikerProgressBar.isFinish()){
+                    flikerProgressBar.toggle();
+                }
+            }
+        });
 
         downLoad();
     }
