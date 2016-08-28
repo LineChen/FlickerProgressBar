@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         Thread.sleep(200);
                         Message message = handler.obtainMessage();
-                        message.arg1 = i + 1;
+                        message.arg1 = i + 3;
                         handler.sendMessage(message);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
