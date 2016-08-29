@@ -1,1 +1,1 @@
-include ':app', ':flikerprogressbar'
+include ':app', ':flickerprogressbar'
