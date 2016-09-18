@@ -1,5 +1,6 @@
 package com.beiing.flikerprogressbar;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -10,7 +11,10 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -91,7 +95,6 @@ public class FlikerProgressBar extends View implements Runnable{
         super(context, attrs, defStyleAttr);
 
         initAttrs(attrs);
-        init();
     }
 
     private void initAttrs(AttributeSet attrs) {
@@ -114,9 +117,13 @@ public class FlikerProgressBar extends View implements Runnable{
         flikerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.flicker);
         flickerLeft = -flikerBitmap.getWidth();
 
+        pgBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        pgCanvas = new Canvas(pgBitmap);
+
         thread = new Thread(this);
         thread.start();
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -135,24 +142,26 @@ public class FlikerProgressBar extends View implements Runnable{
                 break;
         }
         setMeasuredDimension(widthSpecSize, height);
+
+        init();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        //边框
+//边框
         drawBorder(canvas);
 
-        //进度
+//进度
         drawProgress();
 
         canvas.drawBitmap(pgBitmap, 0, 0, null);
 
-        //进度text
+//进度text
         drawProgressText(canvas);
 
-        //变色处理
+//变色处理
         drawColorProgressText(canvas);
     }
 
@@ -170,15 +179,17 @@ public class FlikerProgressBar extends View implements Runnable{
     /**
      * 进度
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void drawProgress() {
         bgPaint.setStyle(Paint.Style.FILL);
         bgPaint.setStrokeWidth(0);
         bgPaint.setColor(progressColor);
 
         float right = (progress / MAX_PROGRESS) * getMeasuredWidth();
-        pgBitmap = Bitmap.createBitmap((int) Math.max(right, 1), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        pgCanvas = new Canvas(pgBitmap);
+        pgCanvas.save(Canvas.CLIP_SAVE_FLAG);
+        pgCanvas.clipRect(0, 0, right, getMeasuredHeight());
         pgCanvas.drawColor(progressColor);
+        pgCanvas.restore();
 
         if(!isStop){
             bgPaint.setXfermode(xfermode);
@@ -308,18 +319,4 @@ public class FlikerProgressBar extends View implements Runnable{
         return dp * density;
     }
 
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
