@@ -226,7 +226,7 @@ public class FlikerProgressBar extends View implements Runnable{
         float progressWidth = (progress / MAX_PROGRESS) * getMeasuredWidth();
         if(progressWidth > xCoordinate){
             canvas.save(Canvas.CLIP_SAVE_FLAG);
-            float right = Math.min(progressWidth, xCoordinate + tWidth);
+            float right = Math.min(progressWidth, xCoordinate + tWidth * 1.1f);
             canvas.clipRect(xCoordinate, 0, right, getMeasuredHeight());
             canvas.drawText(progressText, xCoordinate, yCoordinate, textPaint);
             canvas.restore();
