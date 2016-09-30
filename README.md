@@ -67,9 +67,7 @@ Handler handler = new Handler(){
 
 #License
 
-- - -
-
-```java
+```
 Copyright (C) 2016 LineChen <15764230067@163.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
