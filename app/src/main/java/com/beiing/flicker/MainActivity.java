@@ -45,12 +45,17 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < 100; i++) {
+                while(true){
                     try {
+                        float progress = flikerProgressBar.getProgress();
+                        progress++;
                         Thread.sleep(200);
                         Message message = handler.obtainMessage();
-                        message.arg1 = i + 1;
+                        message.arg1 = (int) progress;
                         handler.sendMessage(message);
+                        if(progress == 100){
+                            break;
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
