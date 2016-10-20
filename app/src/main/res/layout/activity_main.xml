@@ -19,4 +19,10 @@
         app:loadingColor="#40c4ff"
         app:stopColor="#ff9800"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="重新下载"
+        android:onClick="reLoad"/>
+
 </LinearLayout>

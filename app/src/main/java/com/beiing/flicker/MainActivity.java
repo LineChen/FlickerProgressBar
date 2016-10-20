@@ -41,6 +41,15 @@ public class MainActivity extends AppCompatActivity {
         downLoad();
     }
 
+
+    public void reLoad(View view) {
+        if(flikerProgressBar.isFinish()){
+            // 重新加载
+            flikerProgressBar.reset();
+            downLoad();
+        }
+    }
+
     private void downLoad() {
         new Thread(new Runnable() {
             @Override
@@ -48,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 while(true){
                     try {
                         float progress = flikerProgressBar.getProgress();
-                        progress++;
+                        progress  += 2;
                         Thread.sleep(200);
                         Message message = handler.obtainMessage();
                         message.arg1 = (int) progress;
@@ -63,4 +72,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
 }
