@@ -111,7 +111,12 @@ public class FlikerProgressBar extends View implements Runnable{
         textPaint.setTextSize(textSize);
         textBouds = new Rect();
 
-        progressColor = loadingColor;
+        if(isStop){
+            progressColor = stopColor;
+        } else{
+            progressColor = loadingColor;
+        }
+
         flikerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.flicker);
         flickerLeft = -flikerBitmap.getWidth();
 
