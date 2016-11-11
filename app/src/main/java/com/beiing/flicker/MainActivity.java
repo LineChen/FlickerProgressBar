@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.beiing.flikerprogressbar.FlikerBar;
 import com.beiing.flikerprogressbar.FlikerProgressBar;
 
 public class MainActivity extends AppCompatActivity {
 
-    FlikerProgressBar flikerProgressBar;
+    FlikerBar flikerProgressBar;
 
     Handler handler = new Handler(){
         @Override
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        flikerProgressBar = (FlikerProgressBar) findViewById(R.id.flikerbar);
+        flikerProgressBar = (FlikerBar) findViewById(R.id.flikerbar);
 
         flikerProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override

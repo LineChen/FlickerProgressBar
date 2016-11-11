@@ -11,7 +11,7 @@
     android:orientation="vertical"
     tools:context="com.beiing.flicker.MainActivity">
 
-    <com.beiing.flikerprogressbar.FlikerProgressBar
+    <com.beiing.flikerprogressbar.FlikerBar
         android:id="@+id/flikerbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
