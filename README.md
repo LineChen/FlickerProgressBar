@@ -1,79 +1,30 @@
 # FlickerProgressBar
 
-Android 仿应用宝下载进度条 
 
 ### 自定义属性
 
-- loadingColor 下载中颜色
-- stopColor 暂停时颜色
-- textSize 进度文本字体大小
+| 属性名 | 说明 | 默认值 |
+|--------|--------|
+|     loadingColor   |    下载中颜色    | 	#40c4ff 	|
+|     stopColor   |    暂停时和下载完成颜色    | 		#ff9800 	|
+|     textSize   |    进度文本字体大小    | 	12sp		|
+|     radius   |    圆角    | 		0dp	|
+|     borderWidth   |    背景边框宽度    | 		1dp 	|
+
 
 ### 效果图
 
 ![pic](https://github.com/LineChen/FlikerProgressBar/blob/master/screenshot/screenshot.gif)
 
-### 使用
-
-#### 布局
-
-```java
-
-<com.beiing.flikerprogressbar.FlikerProgressBar
-        android:id="@+id/flikerbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:textSize="12sp"
-        app:loadingColor="#40c4ff"
-        app:stopColor="#ff9800"/>
-
-```
-
-
-#### 测试下载
-
-```java
-
-Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            flikerProgressBar.setProgress(msg.arg1);
-            if(msg.arg1 == 100){
-                flikerProgressBar.finishLoad();
-            }
-        }
-    };
-    
-     private void downLoad() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true){
-                    try {
-                        float progress = flikerProgressBar.getProgress();
-                        progress++;
-                        Thread.sleep(200);
-                        Message message = handler.obtainMessage();
-                        message.arg1 = (int) progress;
-                        handler.sendMessage(message);
-                        if(progress == 100){
-                            break;
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    }
-
-```
+###更新历史
+>1. First commit on  2016/8/26
+>2. Add round support adn fix reset function on 2016/11/11
 
 
 #License
 
 ```
-   Copyright (C) 2016 LineChen <15764230067@163.com>
+   Copyright  2016 LineChen <15764230067@163.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
