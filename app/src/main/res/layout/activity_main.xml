@@ -11,18 +11,29 @@
     android:orientation="vertical"
     tools:context="com.beiing.flicker.MainActivity">
 
-    <com.beiing.flikerprogressbar.FlikerBar
+    <com.beiing.flikerprogressbar.FlikerProgressBar
         android:id="@+id/flikerbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:textSize="12sp"
         app:loadingColor="#40c4ff"
-        app:stopColor="#ff9800"/>
+        app:stopColor="#ff9800"
+        />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="重新下载"
         android:onClick="reLoad"/>
+
+    <com.beiing.flikerprogressbar.FlikerProgressBar
+        android:id="@+id/round_flikerbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:textSize="12sp"
+        app:loadingColor="#40c4ff"
+        app:stopColor="#ff9800"
+        app:radius="20dp"
+        />
 
 </LinearLayout>
