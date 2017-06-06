@@ -39,7 +39,11 @@
    limitations under the License.
 ```
 
+欢迎关注微信公众号
 
 ![欢迎关注微信公众号](https://github.com/LineChen/FlickerProgressBar/blob/master/qrcode_wechat.jpg)
+
+
+
 
 
