@@ -16,12 +16,12 @@
 
 ![pic](https://github.com/LineChen/FlikerProgressBar/blob/master/screenshot/screenshot.gif)
 
-###更新历史
+### 更新历史
 >1. First commit on  2016/8/26
 >2. Add round support adn fix reset function on 2016/11/11
 
 
-#License
+# License
 
 ```
    Copyright  2016 LineChen <15764230067@163.com>
@@ -38,5 +38,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ```
+
+
+![欢迎关注微信公众号](https://github.com/LineChen/FlickerProgressBar/blob/master/qrcode_wechat.jpg)
 
 
